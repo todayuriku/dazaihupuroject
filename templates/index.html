@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poetech大宰府</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fff8e8; /* 背景色を薄いクリーム色に設定 */
+            font-family: 'Arial', sans-serif;
+        }
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .sub-title {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .search-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .search-button {
+            background-color: #f9a825;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .search-button:hover {
+            background-color: #f57f17;
+        }
+        .recommendation {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .recommendation button {
+            background-color: #fff2cc;
+            border: 1px solid #f9a825;
+            color: #333;
+            border-radius: 5px;
+            padding: 5px 15px;
+            margin: 5px;
+        }
+        .recommendation button:hover {
+            background-color: #fde293;
+            color: #000;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .result-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <!-- ヘッダー -->
+        <div class="text-center mb-5">
+            <h1 class="header-title">Poetech大宰府</h1>
+            <p class="sub-title">テクノロジー×俳句・短歌×まちづくりプロジェクト</p>
+            <p>大宰府で収集した俳句・短歌でライブラリを作成。単語から俳句・短歌を検索</p>
+        </div>
+
+        <!-- 検索ボックス -->
+        <div class="search-container mx-auto col-lg-6">
+            <form id="search-form">
+                <div class="mb-3">
+                    <label for="search-input" class="form-label">検索</label>
+                    <input type="text" class="form-control" id="search-input" placeholder="例: 春 など">
+                </div>
+                <button type="submit" class="btn search-button w-100">検索</button>
+            </form>
+        </div>
+
+        <!-- おすすめワード -->
+        <div class="recommendation">
+            <h5 class="mt-5">おすすめワード</h5>
+            <button type="button" class="btn" onclick="searchWithWord('空')">空</button>
+            <button type="button" class="btn" onclick="searchWithWord('梅')">梅</button>
+        </div>
+
+        <!-- 検索結果 -->
+        <div id="results" class="results"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // 検索フォームの送信イベントを処理
+        document.getElementById("search-form").addEventListener("submit", (e) => {
+            e.preventDefault(); // フォーム送信のデフォルト動作を無効化
+            const query = document.getElementById("search-input").value;
+            search(query);
+        });
+
+        // おすすめワードのクリックで検索
+        function searchWithWord(word) {
+            document.getElementById("search-input").value = word; // 検索ボックスに値を設定
+            search(word); // 検索実行
+        }
+
+        // 検索リクエストをサーバーに送信
+        function search(query) {
+            axios.post("/search", { query })
+                .then(response => {
+                    const results = response.data;
+                    const resultsDiv = document.getElementById("results");
+                    resultsDiv.innerHTML = "";
+
+                    if (results.length === 0) {
+                        resultsDiv.innerHTML = "<p>該当する句が見つかりませんでした。</p>";
+                    } else {
+                        results.forEach(poem => {
+                            const div = document.createElement("div");
+                            div.classList.add("result-item");
+                            div.innerHTML = `
+                                <p><strong>${poem["句"]}</strong></p>
+                                <p>データ元: ${poem["データ元"]} | 年齢: ${poem["年齢"]} |在住地: ${poem["在住地"]}</p>
+                            `;
+                            resultsDiv.appendChild(div);
+                        });
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
