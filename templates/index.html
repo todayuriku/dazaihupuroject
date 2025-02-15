@@ -1,150 +1,188 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poetech太宰府</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #fff8e8; 
-            font-family: 'Arial', sans-serif;
-        }
-        .header-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-        .sub-title {
-            font-size: 1.2rem;
-            color: #555;
-        }
-        .search-container {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .search-button {
-            background-color: #f9a825;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        .search-button:hover {
-            background-color: #f57f17;
-        }
-        .recommendation {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .recommendation button {
-            background-color: #fff2cc;
-            border: 1px solid #f9a825;
-            color: #333;
-            border-radius: 5px;
-            padding: 5px 15px;
-            margin: 5px;
-        }
-        .recommendation button:hover {
-            background-color: #fde293;
-            color: #000;
-        }
-        .results {
-            margin-top: 30px;
-        }
-        .result-item {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poetech太宰府</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #fff8e8; 
+      font-family: 'Arial', sans-serif;
+    }
+    .header-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+    .sub-title {
+      font-size: 1.2rem;
+      color: #555;
+    }
+    .search-container {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    .search-button {
+      background-color: #f9a825;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .search-button:hover {
+      background-color: #f57f17;
+    }
+    .recommendation {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .recommendation button {
+      background-color: #fff2cc;
+      border: 1px solid #f9a825;
+      color: #333;
+      border-radius: 5px;
+      padding: 5px 15px;
+      margin: 5px;
+    }
+    .recommendation button:hover {
+      background-color: #fde293;
+      color: #000;
+    }
+    .results {
+      margin-top: 30px;
+    }
+    .result-item {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 <body>
-    <div class="container my-5">
-        <div class="text-center mb-5">
-            <h1 class="header-title">Poetech太宰府</h1>
-            <p class="sub-title">テクノロジー×俳句・短歌×まちづくりプロジェクト</p>
-            <p>太宰府で収集した俳句・短歌でライブラリを作成。単語とAIによる分類で俳句・短歌を検索。単語とタグの組み合わせ検索も可能</p>
-        </div>
-
-        <div class="search-container mx-auto col-lg-6">
-            <form id="search-form">
-                <div class="mb-3">
-                    <label for="search-input" class="form-label">検索</label>
-                    <input type="text" class="form-control" id="search-input" placeholder="例: 太宰府 春 など">
-                </div>
-                <button type="submit" class="btn search-button w-100">検索</button>
-                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="clearResults()">クリア</button>
-            </form>
-        </div>
-
-        <div class="recommendation">
-           <h5 class="mt-5" style="font-weight: bold;">AIによるタグ付けしぼりこみ</h5>
-	　　<p><strong>タグ説明</strong>　
-    <strong>まちづくり:</strong> 文化振興、芸術活動、地域開発に関する句　
-    <strong>観光:</strong> オーバーツーリズム、観光振興、交通インフラに関する句　
-    <strong>危機管理:</strong> 災害、犯罪、環境問題に関する句　
-    <strong>福祉:</strong> 高齢者、障害者、生活困窮者に関する句　
-    <strong>こども:</strong> こどもの成長、教育、スポーツに関する句　
-    <strong>該当なし:</strong> どのタグにも関連しない句</p>
-            <button type="button" class="btn" onclick="searchByTag('まちづくり')">まちづくり</button>
-            <button type="button" class="btn" onclick="searchByTag('観光')">観光</button>
-            <button type="button" class="btn" onclick="searchByTag('危機管理')">危機管理</button>
-            <button type="button" class="btn" onclick="searchByTag('福祉')">福祉</button>
-            <button type="button" class="btn" onclick="searchByTag('こども')">こども</button>
-            <button type="button" class="btn" onclick="searchByTag('該当なし')">該当なし</button>
-        </div>
-
-        <div id="results" class="results"></div>
+  <div class="container my-5">
+    <div class="text-center mb-5">
+      <h1 class="header-title">Poetech太宰府</h1>
+      <p class="sub-title">テクノロジー×俳句・短歌×まちづくりプロジェクト</p>
+      <p>太宰府で収集した俳句・短歌でライブラリを作成。単語とAIによる分類で俳句・短歌を検索。検索結果でワードクラウドを表示</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-        document.getElementById("search-form").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const query = document.getElementById("search-input").value;
-            search(query, selectedTag);
-        });
+    <div class="search-container mx-auto col-lg-6">
+      <form id="search-form">
+        <div class="mb-3">
+          <label for="search-input" class="form-label">検索</label>
+          <input type="text" class="form-control" id="search-input" placeholder="例: 太宰府 春 など">
+        </div>
+        <button type="submit" class="btn search-button w-100">検索</button>
+        <button type="button" class="btn btn-secondary w-100 mt-2" onclick="clearResults()">クリア</button>
+      </form>
+    </div>
 
-        let selectedTag = ""; 
+    <div class="recommendation">
+      <h5 class="mt-5" style="font-weight: bold;">AIによるタグ付けしぼりこみ</h5>
+      <p><strong>タグ説明</strong>　
+        <strong>まちづくり:</strong> 文化振興、芸術活動、地域開発に関する句　
+        <strong>観光:</strong> オーバーツーリズム、観光振興、交通インフラに関する句　
+        <strong>危機管理:</strong> 災害、犯罪、環境問題に関する句　
+        <strong>福祉:</strong> 高齢者、障害者、生活困窮者に関する句　
+        <strong>こども:</strong> こどもの成長、教育、スポーツに関する句　
+        <strong>該当なし:</strong> どのタグにも関連しない句
+      </p>
+      <button type="button" class="btn" onclick="searchByTag('まちづくり')">まちづくり</button>
+      <button type="button" class="btn" onclick="searchByTag('観光')">観光</button>
+      <button type="button" class="btn" onclick="searchByTag('危機管理')">危機管理</button>
+      <button type="button" class="btn" onclick="searchByTag('福祉')">福祉</button>
+      <button type="button" class="btn" onclick="searchByTag('こども')">こども</button>
+      <button type="button" class="btn" onclick="searchByTag('該当なし')">該当なし</button>
+    </div>
 
-        function searchByTag(tag) {
-            selectedTag = tag;
-            const query = document.getElementById("search-input").value;
-            search(query, tag);
-        }
+    <div id="results" class="results"></div>
 
-        function search(query, tag = "") {
-            axios.post("/search", { query, tag })
-                .then(response => {
-                    const resultsDiv = document.getElementById("results");
-                    resultsDiv.innerHTML = "";
+    <!-- ワードクラウド表示用のエリア -->
+    <div id="wordcloud-container" class="mt-4 text-center">
+      <h3>ワードクラウド</h3>
+      <img id="wordcloud" src="" alt="Word Cloud" style="max-width: 100%; border: 1px solid #ddd; border-radius: 8px;">
+    </div>
+  </div>
 
-                    if (response.data.length === 0) {
-                        resultsDiv.innerHTML = "<p>該当する句が見つかりませんでした。</p>";
-                    } else {
-                        response.data.forEach(poem => {
-                            const div = document.createElement("div");
-                            div.classList.add("result-item");
-                            div.innerHTML = `<p><strong>${poem["句"]}</strong></p>
-                                <p>データ元: ${poem["データ元"]} | 年齢: ${poem["年齢"]} | 在住地: ${poem["在住地"]} | AIタグ：${poem["AIタグ"]}</p>`;
-                            resultsDiv.appendChild(div);
-                        });
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-        }
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // グローバル変数：現在選択中のタグ
+    let selectedTag = "";
 
-        function clearResults() {
-            document.getElementById("results").innerHTML = "";
-            document.getElementById("search-input").value = "";
-            selectedTag = "";
-        }
-    </script>
+    // 検索フォーム送信時（単語検索＋タグ検索の組み合わせ）
+    document.getElementById("search-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = document.getElementById("search-input").value;
+      search(query, selectedTag);
+    });
+
+    // タグボタン押下時の処理
+    function searchByTag(tag) {
+      selectedTag = tag;
+      const query = document.getElementById("search-input").value;
+      search(query, tag);
+    }
+
+    // 検索処理：/search エンドポイントにリクエスト
+    function search(query, tag = "") {
+      axios.post("/search", { query, tag })
+        .then(response => {
+          const resultsDiv = document.getElementById("results");
+          resultsDiv.innerHTML = "";
+
+          if (response.data.length === 0) {
+            resultsDiv.innerHTML = "<p>該当する句が見つかりませんでした。</p>";
+          } else {
+            response.data.forEach(poem => {
+              const div = document.createElement("div");
+              div.classList.add("result-item");
+
+              // AIタグが配列でない場合にも対応
+              let tags = poem["AIタグ"];
+              if (!Array.isArray(tags)) {
+                tags = [tags];
+              }
+
+              div.innerHTML = `
+                <p><strong>${poem["句"]}</strong></p>
+                <p>
+                  データ元: ${poem["データ元"]} |
+                  年齢: ${poem["年齢"]} |
+                  居住地: ${poem["在住地"]} |
+                  AIタグ：${tags.join(', ')}
+                </p>
+              `;
+              resultsDiv.appendChild(div);
+            });
+          }
+          // 検索結果に基づきワードクラウドも更新
+          updateWordCloud(query, tag);
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    // ワードクラウド画像取得＆表示
+    function updateWordCloud(query, tag = "") {
+      axios.post("/wordcloud", { query, tag }, { responseType: 'blob' })
+        .then(response => {
+          const imageUrl = URL.createObjectURL(response.data);
+          document.getElementById("wordcloud").src = imageUrl;
+        })
+        .catch(error => console.error("WordCloud Error:", error));
+    }
+
+    // クリアボタン処理
+    function clearResults() {
+      document.getElementById("results").innerHTML = "";
+      document.getElementById("search-input").value = "";
+      document.getElementById("wordcloud").src = "";
+      selectedTag = "";
+    }
+  </script>
 </body>
 </html>
-

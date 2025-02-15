@@ -1,3 +1,6 @@
 flask
 pandas
 openpyxl
+setuptools
+japanize-matplotlib
+janome
