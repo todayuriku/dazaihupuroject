@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: 
+            background-color: #fff8e8; 
             font-family: 'Arial', sans-serif;
         }
         .header-title {
@@ -65,73 +65,86 @@
 </head>
 <body>
     <div class="container my-5">
-        <!-- ヘッダー -->
         <div class="text-center mb-5">
             <h1 class="header-title">Poetech太宰府</h1>
             <p class="sub-title">テクノロジー×俳句・短歌×まちづくりプロジェクト</p>
-            <p>太宰府で収集した俳句・短歌でライブラリを作成。単語から俳句・短歌を検索</p>
+            <p>太宰府で収集した俳句・短歌でライブラリを作成。単語とAIによる分類で俳句・短歌を検索。単語とタグの組み合わせ検索も可能</p>
         </div>
 
-        <!-- 検索ボックス -->
         <div class="search-container mx-auto col-lg-6">
             <form id="search-form">
                 <div class="mb-3">
                     <label for="search-input" class="form-label">検索</label>
-                    <input type="text" class="form-control" id="search-input" placeholder="例: 太宰府　春 など">
+                    <input type="text" class="form-control" id="search-input" placeholder="例: 太宰府 春 など">
                 </div>
                 <button type="submit" class="btn search-button w-100">検索</button>
+                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="clearResults()">クリア</button>
             </form>
         </div>
 
-        <!-- おすすめワード -->
         <div class="recommendation">
-            <h5 class="mt-5">おすすめワード</h5>
-            <button type="button" class="btn" onclick="searchWithWord('空')">空</button>
-            <button type="button" class="btn" onclick="searchWithWord('梅')">梅</button>
+           <h5 class="mt-5" style="font-weight: bold;">AIによるタグ付けしぼりこみ</h5>
+	　　<p><strong>タグ説明</strong>　
+    <strong>まちづくり:</strong> 文化振興、芸術活動、地域開発に関する句　
+    <strong>観光:</strong> オーバーツーリズム、観光振興、交通インフラに関する句　
+    <strong>危機管理:</strong> 災害、犯罪、環境問題に関する句　
+    <strong>福祉:</strong> 高齢者、障害者、生活困窮者に関する句　
+    <strong>こども:</strong> こどもの成長、教育、スポーツに関する句　
+    <strong>該当なし:</strong> どのタグにも関連しない句</p>
+            <button type="button" class="btn" onclick="searchByTag('まちづくり')">まちづくり</button>
+            <button type="button" class="btn" onclick="searchByTag('観光')">観光</button>
+            <button type="button" class="btn" onclick="searchByTag('危機管理')">危機管理</button>
+            <button type="button" class="btn" onclick="searchByTag('福祉')">福祉</button>
+            <button type="button" class="btn" onclick="searchByTag('こども')">こども</button>
+            <button type="button" class="btn" onclick="searchByTag('該当なし')">該当なし</button>
         </div>
 
-        <!-- 検索結果 -->
         <div id="results" class="results"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.getElementById("search-form").addEventListener("submit", (e) => {
-            e.preventDefault(); // フォーム送信のデフォルト動作を無効化
+            e.preventDefault();
             const query = document.getElementById("search-input").value;
-            search(query);
+            search(query, selectedTag);
         });
 
-        // おすすめワードのクリックで検索
-        function searchWithWord(word) {
-            document.getElementById("search-input").value = word; // 検索ボックスに値を設定
-            search(word); // 検索実行
+        let selectedTag = ""; 
+
+        function searchByTag(tag) {
+            selectedTag = tag;
+            const query = document.getElementById("search-input").value;
+            search(query, tag);
         }
 
-        // 検索リクエストをサーバーに送信
-        function search(query) {
-            axios.post("/search", { query })
+        function search(query, tag = "") {
+            axios.post("/search", { query, tag })
                 .then(response => {
-                    const results = response.data;
                     const resultsDiv = document.getElementById("results");
                     resultsDiv.innerHTML = "";
 
-                    if (results.length === 0) {
+                    if (response.data.length === 0) {
                         resultsDiv.innerHTML = "<p>該当する句が見つかりませんでした。</p>";
                     } else {
-                        results.forEach(poem => {
+                        response.data.forEach(poem => {
                             const div = document.createElement("div");
                             div.classList.add("result-item");
-                            div.innerHTML = `
-                                <p><strong>${poem["句"]}</strong></p>
-                                <p>データ元: ${poem["データ元"]} | 年齢: ${poem["年齢"]} |在住地: ${poem["在住地"]}</p>
-                            `;
+                            div.innerHTML = `<p><strong>${poem["句"]}</strong></p>
+                                <p>データ元: ${poem["データ元"]} | 年齢: ${poem["年齢"]} | 在住地: ${poem["在住地"]} | AIタグ：${poem["AIタグ"]}</p>`;
                             resultsDiv.appendChild(div);
                         });
                     }
                 })
                 .catch(error => console.error("Error:", error));
         }
+
+        function clearResults() {
+            document.getElementById("results").innerHTML = "";
+            document.getElementById("search-input").value = "";
+            selectedTag = "";
+        }
     </script>
 </body>
 </html>
+
