@@ -93,7 +93,7 @@ def generate_wordcloud():
 
         # ストップワードの設定（必要に応じて追加・調整してください）
         stopwords = set([
-            'や','し','ず','ん','お','ば','さ','だっ','れ','か','み','で','い','の', 'に', 'は', 'を', 'が', 'と', 'た', 'よ', 'ね', 'する', 'れる', 'いる', 'ある', 'なる', 'これ', 'それ',"です","ます","も","だ","成る","為る","居る","て","な","思う", "。", "、", "！", "？", ","
+            'や','し','ず','ん','お','ば','さ','だっ','れ','か','み','で','い','の', 'に', 'は', 'を', 'が', 'と', 'た', 'よ', 'ね', 'する', 'れる', 'いる', 'ある', 'なる', 'これ', 'それ',"です","ます","も","だ","成る","為る","居る","て","な","思う", "。", "、", "！", "？", ",","から"
         ])
 
         words = []
@@ -102,8 +102,8 @@ def generate_wordcloud():
             tokens = tokenizer.tokenize(poem["句"])
             for token in tokens:
                 word = token.surface
-                # ストップワードや不要な単語（例: 1文字のみなど）を除外
-                if word not in stopwords and len(word.strip()) > 1:
+                # ストップワードや不要な単語を除外
+                if word not in stopwords :
                     words.append(word)
         
         # 単語がない場合の対応
@@ -114,7 +114,7 @@ def generate_wordcloud():
 
         # ワードクラウド生成（日本語フォントを指定）
         wc = WordCloud(
-         font_path = r"C:\Users\admin\Desktop\大宰府プロジェクト\github\dazaihupuroject\fonts\NotoSansJP-VariableFont_wght.ttf",  
+         font_path = "./fonts/NotoSansJP-VariableFont_wght.ttf",  
             background_color="#fff8e8",
             width=800,
             height=600
