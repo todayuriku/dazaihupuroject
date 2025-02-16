@@ -122,14 +122,14 @@ def generate_wordcloud():
             text = " ".join(words)
 
         # マスク画像の読み込み（try ブロック内に正しくインデントする）
-        mask = np.array(Image.open("./picture/neko.png"))
+        mask = np.array(Image.open("./picture/apple.png"))
 
         # ワードクラウド生成（日本語フォントを指定）
         wc = WordCloud(
             font_path="./fonts/NotoSansJP-Medium.ttf",
             background_color="#fff8e8",
-            width=2000,
-            height=2000,
+            width=800,
+            height=800,
             max_words=100,
             mask=mask,
         ).generate(text)
