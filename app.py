@@ -2,6 +2,8 @@ import os
 import re
 import json
 import io
+import numpy as np              
+from PIL import Image 
 
 from flask import Flask, render_template, request, jsonify, send_file
 from wordcloud import WordCloud
@@ -59,7 +61,6 @@ def search():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 @app.route("/wordcloud", methods=["POST"])
 def generate_wordcloud():
     """
@@ -93,7 +94,10 @@ def generate_wordcloud():
 
         # ストップワードの設定（必要に応じて追加・調整してください）
         stopwords = set([
-            'や','し','ず','ん','お','ば','さ','だっ','れ','か','み','で','い','の', 'に', 'は', 'を', 'が', 'と', 'た', 'よ', 'ね', 'する', 'れる', 'いる', 'ある', 'なる', 'これ', 'それ',"です","ます","も","だ","成る","為る","居る","て","な","思う", "。", "、", "！", "？", ",","から"
+            'や', 'し', 'ず', 'ん', 'お', 'ば', 'さ', 'だっ', 'れ', 'か', 'み', 'で', 'い',
+            'の', 'に', 'は', 'を', 'が', 'と', 'た', 'よ', 'ね', 'する', 'れる', 'いる',
+            'ある', 'なる', 'これ', 'それ', "です", "ます", "も", "だ", "成る", "為る", "居る",
+            "て", "な", "思う", "。", "、", "！", "？", ",", "から", "ぬ"
         ])
 
         words = []
@@ -103,21 +107,26 @@ def generate_wordcloud():
             for token in tokens:
                 word = token.surface
                 # ストップワードや不要な単語を除外
-                if word not in stopwords :
+                if word not in stopwords:
                     words.append(word)
         
         # 単語がない場合の対応
         if not words:
             text = "データなし"
         else:
-                       text = " ".join(words)
+            text = " ".join(words)
+
+        # マスク画像の読み込み（try ブロック内に正しくインデントする）
+        mask = np.array(Image.open("./picture/n.png"))
 
         # ワードクラウド生成（日本語フォントを指定）
         wc = WordCloud(
-         font_path = "./fonts/NotoSansJP-VariableFont_wght.ttf",  
+            font_path="./fonts/NotoSansJP-Medium.ttf",
             background_color="#fff8e8",
-            width=800,
-            height=600
+            width=1000,
+            height=1000,
+            max_words=100,
+            mask=mask,
         ).generate(text)
 
         img_io = io.BytesIO()
@@ -127,6 +136,7 @@ def generate_wordcloud():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=os.getenv("FLASK_DEBUG", "False").lower() == "true")
