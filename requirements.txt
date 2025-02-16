@@ -4,3 +4,4 @@ openpyxl
 setuptools
 japanize-matplotlib
 janome
+wordcloud
