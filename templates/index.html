@@ -38,17 +38,47 @@
       margin-top: 20px;
       text-align: center;
     }
-    .recommendation button {
+    /* タグボタンの基本デザイン */
+    .tag-button {
       background-color: #fff2cc;
       border: 1px solid #f9a825;
       color: #333;
       border-radius: 5px;
       padding: 5px 15px;
       margin: 5px;
+      cursor: pointer;
     }
-    .recommendation button:hover {
+    .tag-button:hover {
       background-color: #fde293;
       color: #000;
+    }
+    /* 選択中のタグボタン */
+    .tag-active {
+      background-color: #f57f17;
+      color: #fff;
+    }
+    /* 場所フィルター用ボタン（基本デザイン） */
+    .location-button {
+      background-color: #fff2cc;
+      border: 1px solid #f9a825;
+      color: #333;
+      border-radius: 5px;
+      padding: 5px 15px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .location-button:hover {
+      background-color: #fde293;
+      color: #000;
+    }
+    /* 選択中の場所フィルター用ボタン */
+    .location-button.active {
+      background-color: #f57f17;
+      color: #fff;
+    }
+    .location-filter {
+      margin-top: 20px;
+      text-align: center;
     }
     .results {
       margin-top: 30px;
@@ -65,26 +95,40 @@
 </head>
 <body>
   <div class="container my-5">
+    <!-- ヘッダー -->
     <div class="text-center mb-5">
       <h1 class="header-title">Poetech太宰府</h1>
       <p class="sub-title">テクノロジー×俳句・短歌×まちづくりプロジェクト</p>
       <p>太宰府で収集した俳句・短歌でライブラリを作成。単語とAIによる分類で俳句・短歌を検索。検索結果をワードクラウドで表示</p>
     </div>
 
+    <!-- 検索フォーム -->
     <div class="search-container mx-auto col-lg-6">
       <form id="search-form">
         <div class="mb-3">
-          <label for="search-input" class="form-label">検索</label>
+          <label for="search-input" class="form-label">検索キーワード</label>
           <input type="text" class="form-control" id="search-input" placeholder="例: 太宰府 春 など">
+        </div>
+        <!-- データ元（プルダウン） -->
+        <div class="mb-3">
+          <label for="source-select" class="form-label">データ元</label>
+          <select id="source-select" class="form-select">
+            <option value="">選択なし</option>
+            <option value="ポスト">ポスト</option>
+            <option value="句会">句会</option>
+            <option value="広報">広報</option>
+          </select>
         </div>
         <button type="submit" class="btn search-button w-100">検索</button>
         <button type="button" class="btn btn-secondary w-100 mt-2" onclick="clearResults()">クリア</button>
       </form>
     </div>
 
+    <!-- タグフィルター -->
     <div class="recommendation">
       <h5 class="mt-5" style="font-weight: bold;">AIによるタグ付けしぼりこみ</h5>
-      <p><strong>タグ説明</strong>　
+      <p>
+        <strong>タグ説明</strong>　
         <strong>まちづくり:</strong> 文化振興、芸術活動、地域開発に関する句　
         <strong>観光:</strong> オーバーツーリズム、観光振興、交通インフラに関する句　
         <strong>危機管理:</strong> 災害、犯罪、環境問題に関する句　
@@ -92,45 +136,53 @@
         <strong>こども:</strong> こどもの成長、教育、スポーツに関する句　
         <strong>該当なし:</strong> どのタグにも関連しない句
       </p>
-      <button type="button" class="btn" onclick="searchByTag('まちづくり')">まちづくり</button>
-      <button type="button" class="btn" onclick="searchByTag('観光')">観光</button>
-      <button type="button" class="btn" onclick="searchByTag('危機管理')">危機管理</button>
-      <button type="button" class="btn" onclick="searchByTag('福祉')">福祉</button>
-      <button type="button" class="btn" onclick="searchByTag('こども')">こども</button>
-      <button type="button" class="btn" onclick="searchByTag('該当なし')">該当なし</button>
+      <button type="button" class="btn tag-button" onclick="searchByTag('まちづくり')">まちづくり</button>
+      <button type="button" class="btn tag-button" onclick="searchByTag('観光')">観光</button>
+      <button type="button" class="btn tag-button" onclick="searchByTag('危機管理')">危機管理</button>
+      <button type="button" class="btn tag-button" onclick="searchByTag('福祉')">福祉</button>
+      <button type="button" class="btn tag-button" onclick="searchByTag('こども')">こども</button>
+      <button type="button" class="btn tag-button" onclick="searchByTag('該当なし')">該当なし</button>
     </div>
 
-    <div id="results" class="results"></div>
+    <!-- 場所フィルター -->
+    <div class="location-filter">
+      <h5 style="font-weight: bold;">場所で絞り込み</h5>
+      <button type="button" class="btn location-button" onclick="searchByLocation('太宰府市内')">太宰府市内</button>
+      <button type="button" class="btn location-button" onclick="searchByLocation('福岡県内(太宰府市以外)')">福岡県内(太宰府市以外)</button>
+      <button type="button" class="btn location-button" onclick="searchByLocation('福岡県外')">福岡県外</button>
+    </div>
 
-    <!-- ワードクラウド表示用のエリア -->
+    <!-- 全ての句を表示するボタン -->
+    <div class="text-center mt-4">
+      <button type="button" class="btn search-button" onclick="displayAll()">全ての句を表示</button>
+    </div>
+
+    <!-- ワードクラウド表示エリア（検索結果・件数の上に配置） -->
     <div id="wordcloud-container" class="mt-4 text-center">
       <h3><strong>ワードクラウド</strong></h3>
       <img id="wordcloud" src="" alt="Word Cloud" style="max-width: 100%; border: 1px solid #ddd; border-radius: 8px;">
     </div>
+
+    <!-- 検索結果表示エリア -->
+    <div id="results" class="results"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-    // グローバル変数：現在選択中のタグ
+    // グローバル変数：現在選択中のタグと場所フィルター
     let selectedTag = "";
+    let selectedLocation = "";
 
-    // 検索フォーム送信時（単語検索＋タグ検索の組み合わせ）
     document.getElementById("search-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const query = document.getElementById("search-input").value;
-      search(query, selectedTag);
+      const sourceValue = document.getElementById("source-select").value;
+      search(query, selectedTag, sourceValue, selectedLocation);
     });
 
-    // タグボタン押下時の処理
-    function searchByTag(tag) {
-      selectedTag = tag;
-      const query = document.getElementById("search-input").value;
-      search(query, tag);
-    }
-
-    // 検索処理：/search エンドポイントにリクエスト
-    function search(query, tag = "") {
-      axios.post("/search", { query, tag })
+    // 検索処理（/searchエンドポイント）
+    function search(query, tag = "", source = "", location = "") {
+      axios.post("/search", { query, tag, source, location })
         .then(response => {
           const resultsDiv = document.getElementById("results");
           resultsDiv.innerHTML = "";
@@ -138,16 +190,19 @@
           if (response.data.length === 0) {
             resultsDiv.innerHTML = "<p>該当する句が見つかりませんでした。</p>";
           } else {
+            // 件数表示
+            const countHeader = document.createElement("p");
+            countHeader.style.fontWeight = "bold";
+            countHeader.textContent = `検索結果: ${response.data.length} 件`;
+            resultsDiv.appendChild(countHeader);
+
             response.data.forEach(poem => {
               const div = document.createElement("div");
               div.classList.add("result-item");
-
-              // AIタグが配列でない場合にも対応
               let tags = poem["AIタグ"];
               if (!Array.isArray(tags)) {
                 tags = [tags];
               }
-
               div.innerHTML = `
                 <p><strong>${poem["句"]}</strong></p>
                 <p>
@@ -160,15 +215,14 @@
               resultsDiv.appendChild(div);
             });
           }
-          // 検索結果に基づきワードクラウドも更新
-          updateWordCloud(query, tag);
+          updateWordCloud(query, tag, source, location);
         })
         .catch(error => console.error("Error:", error));
     }
 
-    // ワードクラウド画像取得＆表示
-    function updateWordCloud(query, tag = "") {
-      axios.post("/wordcloud", { query, tag }, { responseType: 'blob' })
+    // ワードクラウド更新処理
+    function updateWordCloud(query, tag = "", source = "", location = "") {
+      axios.post("/wordcloud", { query, tag, source, location }, { responseType: 'blob' })
         .then(response => {
           const imageUrl = URL.createObjectURL(response.data);
           document.getElementById("wordcloud").src = imageUrl;
@@ -176,12 +230,69 @@
         .catch(error => console.error("WordCloud Error:", error));
     }
 
-    // クリアボタン処理
+    // タグボタン押下時の処理
+    function searchByTag(tag) {
+      selectedTag = tag;
+      updateTagButtonStyles();
+      const query = document.getElementById("search-input").value;
+      const sourceValue = document.getElementById("source-select").value;
+      search(query, tag, sourceValue, selectedLocation);
+    }
+
+    // 場所フィルター押下時の処理
+    function searchByLocation(location) {
+      selectedLocation = location;
+      updateLocationButtonStyles();
+      const query = document.getElementById("search-input").value;
+      const sourceValue = document.getElementById("source-select").value;
+      search(query, selectedTag, sourceValue, location);
+    }
+
+    // タグボタンの選択状態更新
+    function updateTagButtonStyles() {
+      const buttons = document.querySelectorAll('.tag-button');
+      buttons.forEach(button => {
+        if (button.textContent.trim() === selectedTag) {
+          button.classList.add('tag-active');
+        } else {
+          button.classList.remove('tag-active');
+        }
+      });
+    }
+
+    // 場所フィルターの選択状態更新
+    function updateLocationButtonStyles() {
+      const buttons = document.querySelectorAll('.location-button');
+      buttons.forEach(button => {
+        if (button.textContent.trim() === selectedLocation) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    }
+
+    // 「全ての句を表示」ボタン用（フィルターリセット）
+    function displayAll() {
+      selectedTag = "";
+      selectedLocation = "";
+      document.getElementById("search-input").value = "";
+      document.getElementById("source-select").value = "";
+      updateTagButtonStyles();
+      updateLocationButtonStyles();
+      search("", "", "", "");
+    }
+
+    // クリアボタンの処理
     function clearResults() {
       document.getElementById("results").innerHTML = "";
       document.getElementById("search-input").value = "";
       document.getElementById("wordcloud").src = "";
+      document.getElementById("source-select").value = "";
       selectedTag = "";
+      selectedLocation = "";
+      updateTagButtonStyles();
+      updateLocationButtonStyles();
     }
   </script>
 </body>

@@ -1,13 +1,13 @@
 
 import pandas as pd
 
-excel_file = "C:\\Users\\admin\\Desktop\\大宰府プロジェクト\\project\\data\\AIタグ付け短歌・俳句.xlsx"
+excel_file = r"C:\Users\admin\Desktop\大宰府プロジェクト\dazaihupuroject\data\AIタグ付け短歌・俳句.xlsx"
 
 
 df = pd.read_excel(excel_file)
 
 
-df = df[["句", "データ元", "年齢", "在住地","AIタグ"]]
+df = df[["句", "データ元", "年齢", "在住地","AIタグ","場所"]]
 
 
 json_file = "poems.json"

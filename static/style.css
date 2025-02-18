@@ -23,3 +23,5 @@ body {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }
+.location-filter button { ... }
+.location-filter button:hover { ... }
