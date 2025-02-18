@@ -139,6 +139,7 @@ def generate_wordcloud():
         wc = WordCloud(
             font_path="./fonts/NotoSansJP-Medium.ttf",
             background_color="#ffffff",
+            colormap="autumn",
             width=800,
             height=800,
             max_words=100,
