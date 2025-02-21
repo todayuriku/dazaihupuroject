@@ -23,12 +23,13 @@ with open(DATA_FILE, "r", encoding="utf-8") as f:
     except json.JSONDecodeError:
         raise ValueError("poems.json の JSON 形式が正しくありません")
 
-logging.basicConfig(level=logging.INFO) 
-logger = logging.getLogger('waitress')
-logger.setLevel(logging.INFO)
+log_path = "/home/users/2/muu-e566b10689/web/chitabea.com/poetech/error.log"
+logging.basicConfig(filename=log_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 @app.route("/")
 def index():
+    app.logger.info("Index page accessed")
     return render_template("index.html")
 
 
