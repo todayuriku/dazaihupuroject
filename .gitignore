@@ -1,0 +1,11 @@
+# OSのファイル
+.DS_Store
+
+# Pythonのバイトコード
+__pycache__/
+
+# 環境設定ファイル
+app.wsgi
+
+# 仮想環境
+venv/
