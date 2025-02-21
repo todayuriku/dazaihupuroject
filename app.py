@@ -8,6 +8,7 @@ from PIL import Image
 from flask import Flask, render_template, request, jsonify, send_file
 from wordcloud import WordCloud
 from janome.tokenizer import Tokenizer
+from janome.sysdic import mmap_entries
 from waitress import serve
 
 app = Flask(__name__)
@@ -115,7 +116,7 @@ def generate_wordcloud():
                 results.append(poem)
 
         # 形態素解析用のトークナイザー生成
-        tokenizer = Tokenizer()
+        tokenizer = Tokenizer(mmap=True)
 
         # ストップワード（必要に応じて調整）
         stopwords = set([

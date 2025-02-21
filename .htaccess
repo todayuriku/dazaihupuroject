@@ -1,3 +1,6 @@
+Options +ExecCGI
+AddHandler cgi-script .cgi .py
+DirectoryIndex index.html app.cgi
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
