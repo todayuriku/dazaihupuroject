@@ -5,7 +5,7 @@
 __pycache__/
 
 # 環境設定ファイル
-app.wsgi
+app.cgi
 
 # 仮想環境
 venv/
