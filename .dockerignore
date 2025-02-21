@@ -1,0 +1,22 @@
+# OS・エディタの不要ファイル
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Python のキャッシュ・仮想環境
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# Git リポジトリ
+.git/
+.gitignore
+
+# ローカルのデータファイル
+# data/AIタグ付け短歌・俳句.xlsx
+# poems.json
+
+# 環境変数（セキュリティ対策）
+.env
