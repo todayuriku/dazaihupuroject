@@ -2,11 +2,13 @@ import os
 import re
 import json
 import io
+import logging
 import numpy as np
 from PIL import Image 
 from flask import Flask, render_template, request, jsonify, send_file
 from wordcloud import WordCloud
 from janome.tokenizer import Tokenizer
+from waitress import serve
 
 app = Flask(__name__)
 
@@ -21,6 +23,9 @@ with open(DATA_FILE, "r", encoding="utf-8") as f:
     except json.JSONDecodeError:
         raise ValueError("poems.json の JSON 形式が正しくありません")
 
+logging.basicConfig(level=logging.INFO) 
+logger = logging.getLogger('waitress')
+logger.setLevel(logging.INFO)
 
 @app.route("/")
 def index():
@@ -156,4 +161,5 @@ def generate_wordcloud():
 
 
 if __name__ == "__main__":
-    app.run(debug=os.getenv("FLASK_DEBUG", "False").lower() == "true")
+    # app.run(debug=os.getenv("FLASK_DEBUG", "False").lower() == "true")
+    serve(app, host='0.0.0.0', port=8080, _quiet=False)
