@@ -5,3 +5,4 @@ setuptools
 japanize-matplotlib
 janome
 wordcloud
+gunicorn
