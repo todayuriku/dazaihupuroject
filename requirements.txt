@@ -6,3 +6,4 @@ japanize-matplotlib
 janome
 wordcloud
 gunicorn
+waitress
