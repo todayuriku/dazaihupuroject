@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - ./picture:/app/picture
+      - ./fonts:/app/fonts
+      - ./poems.json:/app/poems.json
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+    restart: always
