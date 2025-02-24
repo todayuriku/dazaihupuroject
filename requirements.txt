@@ -1,9 +1,7 @@
-flask
-pandas
-openpyxl
-setuptools
-japanize-matplotlib
-janome
-wordcloud
-gunicorn
-waitress
+Flask==2.0.1
+Werkzeug==2.0.3
+waitress==2.0.0
+Pillow==8.4.0
+wordcloud==1.8.1
+janome==0.4.1
+numpy==1.21.0

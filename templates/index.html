@@ -46,7 +46,6 @@
       text-align: center;
     }
 
-    /* タグボタンの基本デザイン */
     .tag-button {
       background-color: #fff2cc;
       border: 1px solid #f9a825;
@@ -62,13 +61,11 @@
       color: #000;
     }
 
-    /* 選択中のタグボタン */
     .tag-active {
       background-color: #f57f17;
       color: #fff;
     }
 
-    /* 場所フィルター用ボタン（基本デザイン） */
     .location-button {
       background-color: #fff2cc;
       border: 1px solid #f9a825;
@@ -84,7 +81,6 @@
       color: #000;
     }
 
-    /* 選択中の場所フィルター用ボタン */
     .location-button.active {
       background-color: #f57f17;
       color: #fff;
@@ -107,11 +103,48 @@
       margin-bottom: 10px;
       box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
     }
+
+    /* ローディングオーバーレイのスタイル */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .loading-content {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
   </style>
 </head>
 
 <body>
   <div class="container my-5">
+    <!-- ローディングインジケータ -->
+    <div id="loading" class="loading-overlay d-none">
+      <div class="loading-content">
+        <div class="spinner-border text-warning" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-2 text-warning">検索中...</div>
+      </div>
+    </div>
+
     <!-- ヘッダー -->
     <div class="text-center mb-5">
       <h1 class="header-title">Poetech太宰府</h1>
@@ -175,7 +208,7 @@
       <button type="button" class="btn search-button" onclick="displayAll()">全ての句を表示</button>
     </div>
 
-    <!-- ワードクラウド表示エリア（検索結果・件数の上に配置） -->
+    <!-- ワードクラウド表示エリア -->
     <div id="wordcloud-container" class="mt-4 text-center">
       <h3><strong>ワードクラウド</strong></h3>
       <img id="wordcloud" src="" alt="Word Cloud" style="max-width: 100%; border: 1px solid #ddd; border-radius: 8px;">
@@ -191,6 +224,15 @@
     let selectedTag = "";
     let selectedLocation = "";
 
+    // ローディング表示の制御関数
+    function showLoading() {
+      document.getElementById('loading').classList.remove('d-none');
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').classList.add('d-none');
+    }
+
     document.getElementById("search-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const query = document.getElementById("search-input").value;
@@ -198,8 +240,9 @@
       search(query, selectedTag, sourceValue, selectedLocation);
     });
 
-    // 検索処理（/searchエンドポイント）
+    // 検索処理
     function search(query, tag = "", source = "", location = "") {
+      showLoading(); // 検索開始時にローディング表示
       axios.post("/search", { query, tag, source, location })
         .then(response => {
           const resultsDiv = document.getElementById("results");
@@ -233,19 +276,31 @@
               resultsDiv.appendChild(div);
             });
           }
-          updateWordCloud(query, tag, source, location);
+          return updateWordCloud(query, tag, source, location);
         })
-        .catch(error => console.error("Error:", error));
+        .then(() => {
+          hideLoading(); // 全ての処理が完了したらローディング非表示
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          hideLoading(); // エラー時もローディング非表示
+          // エラーメッセージを表示
+          const resultsDiv = document.getElementById("results");
+          resultsDiv.innerHTML = "<p class='text-danger'>検索中にエラーが発生しました。</p>";
+        });
     }
 
     // ワードクラウド更新処理
     function updateWordCloud(query, tag = "", source = "", location = "") {
-      axios.post("/wordcloud", { query, tag, source, location }, { responseType: 'blob' })
+      return axios.post("/wordcloud", { query, tag, source, location }, { responseType: 'blob' })
         .then(response => {
           const imageUrl = URL.createObjectURL(response.data);
           document.getElementById("wordcloud").src = imageUrl;
         })
-        .catch(error => console.error("WordCloud Error:", error));
+        .catch(error => {
+          console.error("WordCloud Error:", error);
+          throw error; // エラーを上位にスロー
+        });
     }
 
     // タグボタン押下時の処理
@@ -296,17 +351,6 @@
       selectedLocation = "";
       document.getElementById("search-input").value = "";
       document.getElementById("source-select").value = "";
-      updateTagButtonStyles();
-      updateLocationButtonStyles();
-      search("", "", "", "");
-    }
-
-    // クリアボタンの処理
-    function clearResults() {
-      document.getElementById("results").innerHTML = "";
-      document.getElementById("search-input").value = "";
-      document.getElementById("wordcloud").src = "";
-      document.getElementById("source-select").value = "";
       selectedTag = "";
       selectedLocation = "";
       updateTagButtonStyles();
@@ -314,5 +358,4 @@
     }
   </script>
 </body>
-
 </html>
